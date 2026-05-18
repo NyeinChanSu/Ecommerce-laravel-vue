@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function user(Request $request)
     {
-        return view('auth.login');
+        return response()->json($request->user());
     }
 
     public function login(Request $request)
@@ -22,19 +22,13 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('products.index'));
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['message' => 'Invalid credentials'], 422);
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
-    }
+        $request->session()->regenerate();
 
-    public function showRegister()
-    {
-        return view('auth.register');
+        return response()->json(['success' => true]);
     }
 
     public function register(Request $request)
@@ -54,7 +48,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('products.index')->with('success', 'Registration successful.');
+        return response()->json(['success' => true]);
     }
 
     public function logout(Request $request)
@@ -64,6 +58,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('products.index');
+        return response()->noContent();
     }
 }

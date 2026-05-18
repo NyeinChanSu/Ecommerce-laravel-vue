@@ -1,0 +1,9 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+body {
+  background: #f8f9fa;
+}
+
+a {
+  text-decoration: none;
+}

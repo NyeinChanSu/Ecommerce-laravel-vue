@@ -1,12 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
+    public function index()
+    {
+        return response()->json(session()->get('cart', []));
+    }
+
     public function add(Product $product)
     {
         $cart = session()->get('cart', []);
@@ -19,14 +25,7 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        return redirect()->back()->with('success', 'Product added to cart!');
-    }
-
-    public function show()
-    {
-        $cart = session()->get('cart', []);
-
-        return view('cart.index', compact('cart'));
+        return response()->json(['success' => true]);
     }
 
     public function update(Request $request, Product $product)
@@ -39,7 +38,7 @@ class CartController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect()->route('cart.show')->with('success', 'Cart updated successfully.');
+        return response()->json(['success' => true]);
     }
 
     public function remove(Product $product)
@@ -51,7 +50,6 @@ class CartController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect()->route('cart.show')->with('success', 'Item removed from cart.');
+        return response()->json(['success' => true]);
     }
 }
-

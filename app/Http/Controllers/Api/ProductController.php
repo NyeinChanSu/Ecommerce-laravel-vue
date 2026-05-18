@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Product;
 
 class ProductController extends Controller
@@ -9,11 +10,12 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::paginate(12);
-        return view('products.index', compact('products'));
+
+        return response()->json($products);
     }
 
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        return response()->json($product);
     }
 }
