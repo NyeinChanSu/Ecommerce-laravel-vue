@@ -49,7 +49,7 @@ Route::prefix('admin')->group(function () {
     Route::post('login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.submit');
     Route::post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
-    Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
+    Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
         Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class, [
             'as' => 'admin'
