@@ -50,6 +50,9 @@ Route::prefix('admin')->group(function () {
     Route::post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
     Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
+        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class, [
+            'as' => 'admin'
+        ]);
         Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class, [
             'as' => 'admin'
