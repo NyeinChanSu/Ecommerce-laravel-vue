@@ -27,6 +27,16 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Parent Category</label>
+                <select name="parent_id" class="form-select">
+                    <option value="">-- None --</option>
+                    @foreach($parents as $p)
+                        <option value="{{ $p->id }}" {{ old('parent_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label">Slug</label>
                 <input type="text" name="slug" class="form-control" value="{{ old('slug') }}" required>
             </div>

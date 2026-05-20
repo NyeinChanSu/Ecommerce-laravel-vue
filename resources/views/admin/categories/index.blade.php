@@ -19,6 +19,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Slug</th>
+                            <th>Parent</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -27,12 +28,21 @@
                         <tr>
                             <td>{{ $category->name }}</td>
                             <td>{{ $category->slug }}</td>
+                            <td>{{ $category->parent?->name ?? '-' }}</td>
                             <td class="text-end">
                                 <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this category?')">Delete</button>
+                                </form>
+                                <form action="{{ route('admin.categories.moveUp', $category) }}" method="POST" class="d-inline ms-1">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-secondary">↑</button>
+                                </form>
+                                <form action="{{ route('admin.categories.moveDown', $category) }}" method="POST" class="d-inline ms-1">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-secondary">↓</button>
                                 </form>
                             </td>
                         </tr>

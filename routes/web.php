@@ -53,6 +53,8 @@ Route::prefix('admin')->group(function () {
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class, [
             'as' => 'admin'
         ]);
+        Route::post('categories/{category}/move-up', [\App\Http\Controllers\Admin\CategoryController::class, 'moveUp'])->name('admin.categories.moveUp');
+        Route::post('categories/{category}/move-down', [\App\Http\Controllers\Admin\CategoryController::class, 'moveDown'])->name('admin.categories.moveDown');
         Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class, [
             'as' => 'admin'

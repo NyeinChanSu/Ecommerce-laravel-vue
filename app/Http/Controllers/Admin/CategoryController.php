@@ -16,7 +16,8 @@ class CategoryController extends Controller
 
     public function create()
     {
-        return view('admin.categories.create');
+        $parents = Category::orderBy('name')->get();
+        return view('admin.categories.create', compact('parents'));
     }
 
     public function store(Request $request)
@@ -27,6 +28,8 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
+        $validated['parent_id'] = $request->input('parent_id') ?: null;
+        $validated['position'] = null; // will be set in model boot
         Category::create($validated);
 
         return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
@@ -34,7 +37,8 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        return view('admin.categories.edit', compact('category'));
+        $parents = Category::where('id', '<>', $category->id)->orderBy('name')->get();
+        return view('admin.categories.edit', compact('category', 'parents'));
     }
 
     public function update(Request $request, Category $category)
@@ -45,6 +49,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
+        $validated['parent_id'] = $request->input('parent_id') ?: null;
         $category->update($validated);
 
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
@@ -55,5 +60,41 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+    }
+
+    public function moveUp(Category $category)
+    {
+        $sibling = Category::where('parent_id', $category->parent_id)
+            ->where('position', '<', $category->position)
+            ->orderByDesc('position')
+            ->first();
+
+        if ($sibling) {
+            $tmp = $sibling->position;
+            $sibling->position = $category->position;
+            $category->position = $tmp;
+            $sibling->save();
+            $category->save();
+        }
+
+        return redirect()->route('admin.categories.index');
+    }
+
+    public function moveDown(Category $category)
+    {
+        $sibling = Category::where('parent_id', $category->parent_id)
+            ->where('position', '>', $category->position)
+            ->orderBy('position')
+            ->first();
+
+        if ($sibling) {
+            $tmp = $sibling->position;
+            $sibling->position = $category->position;
+            $category->position = $tmp;
+            $sibling->save();
+            $category->save();
+        }
+
+        return redirect()->route('admin.categories.index');
     }
 }
