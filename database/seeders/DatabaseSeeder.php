@@ -15,10 +15,16 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::firstOrCreate([
+            'email' => 'admin@example.com',
+        ], [
+            'name' => 'Admin User',
+            'password' => bcrypt('admin123'),
+            'is_admin' => true,
         ]);
+
+        // Seed categories first so products can be assigned to them.
+        $this->call(CategorySeeder::class);
 
         // Seed example products
         $this->call(\Database\Seeders\ProductSeeder::class);

@@ -35,6 +35,8 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
+        $validated['images'] = $validated['images'] ? array_values(array_filter(array_map('trim', explode(',', $validated['images'])))) : null;
+
         Product::create($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
@@ -59,6 +61,8 @@ class ProductController extends Controller
             'images' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
         ]);
+
+        $validated['images'] = $validated['images'] ? array_values(array_filter(array_map('trim', explode(',', $validated['images'])))) : null;
 
         $product->update($validated);
 

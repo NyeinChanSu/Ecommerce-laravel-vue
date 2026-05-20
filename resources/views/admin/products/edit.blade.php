@@ -60,7 +60,7 @@
 
             <div class="mb-3 mt-3">
                 <label class="form-label">Images (comma separated URLs)</label>
-                <input type="text" class="form-control" name="images" value="{{ old('images', $product->images) }}">
+                <input type="text" class="form-control" name="images" value="{{ old('images', is_array($product->images) ? implode(',', $product->images) : $product->images) }}">
             </div>
 
             <div class="d-flex justify-content-between mt-4">
