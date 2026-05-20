@@ -33,6 +33,16 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select name="category_id" class="form-select">
+                    <option value="">-- None --</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ (old('category_id', $product->category_id) == $cat->id) ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label">Description</label>
                 <textarea class="form-control" name="description" rows="4">{{ old('description', $product->description) }}</textarea>
             </div>

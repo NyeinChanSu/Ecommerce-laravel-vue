@@ -18,7 +18,8 @@ class ProductController extends Controller
     // Show the form for creating a new product
     public function create()
     {
-        return view('admin.products.create');
+        $categories = \App\Models\Category::orderBy('name')->get();
+        return view('admin.products.create', compact('categories'));
     }
 
     // Store a newly created product in storage
@@ -31,6 +32,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'images' => 'nullable|string',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         Product::create($validated);
@@ -41,7 +43,8 @@ class ProductController extends Controller
     // Show the form for editing the specified product
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        $categories = \App\Models\Category::orderBy('name')->get();
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     // Update the specified product in storage
@@ -54,6 +57,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'images' => 'nullable|string',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $product->update($validated);
