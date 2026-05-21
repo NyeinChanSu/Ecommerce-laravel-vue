@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_admin',
+        'role',
     ];
 
     /**
@@ -44,7 +45,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_admin' => 'boolean',
+        'role' => 'string',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin || in_array($this->role, ['admin', 'superadmin', 'staff'], true);
+    }
 
     public function orders()
     {

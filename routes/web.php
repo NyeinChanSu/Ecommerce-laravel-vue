@@ -38,7 +38,7 @@ Route::redirect('admin/', '/admin/login');
 // admin routes
 Route::prefix('admin')->group(function () {
     Route::get('/', function () {
-        if (auth()->check() && auth()->user()->is_admin) {
+        if (auth('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -50,14 +50,21 @@ Route::prefix('admin')->group(function () {
     Route::post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
     Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
-        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class, [
-            'as' => 'admin'
-        ]);
-        Route::post('categories/{category}/move-up', [\App\Http\Controllers\Admin\CategoryController::class, 'moveUp'])->name('admin.categories.moveUp');
-        Route::post('categories/{category}/move-down', [\App\Http\Controllers\Admin\CategoryController::class, 'moveDown'])->name('admin.categories.moveDown');
-        Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
-        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class, [
-            'as' => 'admin'
-        ]);
-    });
+            Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class, [
+                'as' => 'admin'
+            ]);
+            Route::post('categories/{category}/move-up', [\App\Http\Controllers\Admin\CategoryController::class, 'moveUp'])->name('admin.categories.moveUp');
+            Route::post('categories/{category}/move-down', [\App\Http\Controllers\Admin\CategoryController::class, 'moveDown'])->name('admin.categories.moveDown');
+            Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+            Route::resource('products', \App\Http\Controllers\Admin\ProductController::class, [
+                'as' => 'admin'
+            ]);
+            Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class, [
+                'as' => 'admin'
+            ])->only(['index', 'show']);
+            Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.status');
+            Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class, [
+                'as' => 'admin'
+            ])->only(['index', 'show']);
+        });
 });

@@ -32,7 +32,7 @@ class CheckoutController extends Controller
         });
 
         $order = Order::create([
-            'user_id' => $request->user()->id,
+            'customer_id' => $request->user()->id,
             'status' => 'pending',
             'total' => $total,
             'currency' => 'USD',

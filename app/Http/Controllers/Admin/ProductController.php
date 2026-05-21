@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     // Display a listing of products
     public function index()
     {
-        $products = Product::paginate(10);
+        $products = Product::orderBy('created_at', 'desc')->paginate(10);
         return view('admin.products.index', compact('products'));
     }
 
@@ -32,10 +33,25 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'images' => 'nullable|string',
+            'images_files.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $validated['images'] = $validated['images'] ? array_values(array_filter(array_map('trim', explode(',', $validated['images'])))) : null;
+        // handle uploaded files
+        $uploaded = [];
+        if ($request->hasFile('images_files')) {
+            foreach ($request->file('images_files') as $file) {
+                $uploaded[] = $file->store('products', 'public');
+            }
+        }
+
+        $textImages = $request->input('images') ? array_values(array_filter(array_map('trim', explode(',', $request->input('images'))))) : [];
+
+        $images = array_values(array_filter(array_merge($textImages, $uploaded)));
+        // remove duplicate paths, preserve order
+        $images = array_values(array_unique($images));
+
+        $validated['images'] = count($images) ? $images : null;
 
         Product::create($validated);
 
@@ -59,10 +75,41 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'images' => 'nullable|string',
+            'images_files.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $validated['images'] = $validated['images'] ? array_values(array_filter(array_map('trim', explode(',', $validated['images'])))) : null;
+        // handle uploaded files
+        $uploaded = [];
+        if ($request->hasFile('images_files')) {
+            foreach ($request->file('images_files') as $file) {
+                $uploaded[] = $file->store('products', 'public');
+            }
+        }
+
+        $textImages = $request->input('images') ? array_values(array_filter(array_map('trim', explode(',', $request->input('images'))))) : [];
+
+        // existing images on product
+        $existing = $product->images ?? [];
+
+        // images marked for removal
+        $toRemove = $request->input('remove_images', []);
+        if (!empty($toRemove)) {
+            foreach ($toRemove as $path) {
+                // delete file from storage if exists
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+            // filter out removed images from existing
+            $existing = array_values(array_diff($existing, $toRemove));
+        }
+
+        $images = array_values(array_filter(array_merge($existing, $textImages, $uploaded)));
+        // remove duplicate paths, preserve order
+        $images = array_values(array_unique($images));
+
+        $validated['images'] = count($images) ? $images : null;
 
         $product->update($validated);
 

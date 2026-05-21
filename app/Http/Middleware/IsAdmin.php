@@ -9,12 +9,8 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next)
     {
-        if (! auth()->check()) {
+        if (! auth('admin')->check()) {
             return redirect()->route('admin.login');
-        }
-
-        if (! auth()->user()->is_admin) {
-            abort(403, 'Unauthorized');
         }
 
         return $next($request);

@@ -22,14 +22,9 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()->is_admin) {
-                $request->session()->regenerate();
-                return redirect()->route('admin.dashboard');
-            } else {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Unauthorized access'])->withInput();
-            }
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('admin.dashboard');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
@@ -37,7 +32,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
